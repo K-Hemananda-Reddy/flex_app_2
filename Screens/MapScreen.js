@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import MapView, { MarkerAnimated } from 'react-native-maps';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { UserLocationContext } from '../Context/UserLocationContext';
@@ -6,16 +6,33 @@ import MapViewStyle from '../utils/MapViewStyle.json'
 import { useUser } from "@clerk/clerk-expo";
 import {useAuth} from '@clerk/clerk-expo'
 import { useNavigation } from '@react-navigation/native'
+import Tabs from './Tabs';
+import Header from './Header';
+import axios from 'axios'
 
 export default function App() {
   const {location,setLocation}=useContext(UserLocationContext)
   const { isLoaded, isSignedIn, user } = useUser();
+  const [toggle,setToggle]=useState(false);
   const {signOut}=useAuth()
+  const [points,setPoints]=useState([]);
   const navigation=useNavigation()
+
+  useEffect(async()=>{
+    const res=await getData();
+    setPoints(res)
+  },[])
+
+  const getData=async()=>{
+    const res=await axios.get("https://flex-cap-8mgfneh69-k-hemananda-reddy.vercel.app/api/accidents")
+    return res.data.res
+  } 
+
   return location?.latitude &&(
     <View style={styles.container}>
+  
       
-      <View className="h-[70px] bg-black items-center justify-between px-4 flex-row space-x-4">
+  <View className="h-[70px] bg-black items-center justify-between px-4 flex-row space-x-4 ">
         <TouchableOpacity onPress={()=>{navigation.navigate('Profile')}}>
 
         <View  className="bg-white rounded-full">
@@ -27,14 +44,21 @@ export default function App() {
         </View>
         </TouchableOpacity>
 <Text className="text-white">{user.firstName}</Text>
-<TouchableOpacity onPress={signOut}>
+<TouchableOpacity onPress={()=>{setToggle(!toggle)}} className="border border-1 rounded-full border-white">
   {/* <Text  className="text-white bg-red-500 font-bold p-2 rounded-lg">SignOut</Text> */}
   <Image 
-  source={require('../assets/logout.png')}
-  style={{height:30,width:30}}
+  source={require('../assets/lines.png')}
+  style={{height:40,width:40}}
   />
+  
 </TouchableOpacity>
+
+
       </View>
+{toggle&&
+<Tabs/>
+
+}
       <MapView style={styles.map}
       region={{
         latitude:location?.latitude,
@@ -48,63 +72,14 @@ export default function App() {
           latitude:location?.latitude,
           longitude:location?.longitude
         }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.506189,
-          longitude:78.517430
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.498270,
-          longitude:78.500027
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.489839,
-          longitude:78.526480
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.503345,
-          longitude:78.530002
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.482942,
-          longitude:78.530059
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.516832,
-          longitude:78.541052
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.512872,
-          longitude:78.491394
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.500297,
-          longitude:78.530754
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.476557,
-          longitude:78.502411
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.518796,
-          longitude:78.538484
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.490310,
-          longitude:78.509795
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.539873,
-          longitude:78.514053
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.524486,
-          longitude:78.467674
-        }}/>
-        <MarkerAnimated image={require('../assets/dot3.png')} coordinate={{
-          latitude:17.503205,
-          longitude:78.462864
-        }}/>
+        {points.map((point,index)=>(
+          <MarkerAnimated image={require('../assets/dot3.png')} key={index} coordinate={{latitude:parseFloat(point?.latitude),longitude:parseFloat(point?.longitude)}}/>
+        ))}
+        
       </MapView>
+      
+    
+
     </View>
   );
 }

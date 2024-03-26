@@ -11,6 +11,9 @@ export default function HomeScreen() {
             <Text onPress={()=>{navigation.navigate('Maps')}}  className="text-white bg-black p-5 rounded-lg font-bold">Home</Text>
             
             <Text onPress={()=>{navigation.navigate('Profile')}} className="text-white bg-black p-5 rounded-lg font-bold">profile</Text>
+            <Text onPress={()=>{navigation.navigate('QR')}} className="text-white bg-black p-5 rounded-lg font-bold">QR</Text>
+            <Text onPress={()=>{navigation.navigate('Alarm')}} className="text-white bg-black p-5 rounded-lg font-bold">Alarm</Text>
+            <Text onPress={()=>{navigation.navigate('Notification')}} className="text-white bg-black p-5 rounded-lg font-bold">Notification</Text>
             {/* <Text onPress={()=>{navigation.navigate('Favourite')}} className="text-white bg-black p-5 rounded-lg font-bold">Favourite</Text> */}
             </View>
       </View>
